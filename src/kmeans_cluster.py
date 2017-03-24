@@ -47,8 +47,7 @@ class Centroids:
     @staticmethod
     def kppCent(dataSet, k):
         """Picks a random point to serve as the first centroid"""
-        n = shape(dataSet)[1]
-        centroid_list = mat(zeros((k, n)))
+        centroid_list = mat(zeros((k, shape(dataSet)[1])))
         centroid_index = []
         centroid_count = 0
         index = random.randint(0, shape(dataSet)[0] - 1)
@@ -71,9 +70,7 @@ class Centroids:
             weighted_list = [x / dist_sum for x in distance_list]
             indices = [i for i in range(len(distance_list))]
             chosen_index = random.choice(indices, p=weighted_list)
-            for index in centroid_index:
-                if chosen_index == index: continue
-            centroid_list[centroid_count] = dataSet[index]
+            centroid_list[centroid_count] = dataSet[chosen_index]
             centroid_index.append(chosen_index)
             centroid_count += 1
         return array(centroid_list)
