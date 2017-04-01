@@ -151,5 +151,4 @@ class KMeansPlusPlus:
 
     def cluster(self):
         kpp = KMeans(self.dataSet, self.k)
-        kpp.cluster(DistMeas.distEclud, Centroids.kppCent)
 
