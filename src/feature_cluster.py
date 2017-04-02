@@ -23,8 +23,9 @@ def loadDataSet(filename):
 MAIN
 """
 def main():
-    data = loadDataSet('data/data.csv')
+    data = loadDataSet('data/data_sum.csv')
     # cluster_centers, cluster_inertia = kmeansCluster(data)
+    labels = kmeansCluster(data)
     # cluster_centers = affPropCluster(data)
     # cluster_centers = meanShiftCluster(data)
     # cluster_centers = wardCluster(data)
@@ -33,16 +34,17 @@ def main():
     # print(cluster_centers)
     # print("Sum of distance")
     # print(cluster_inertia)
-    visualization.drawGraph(data)
+    visualization.drawGraph(data, labels, 'data/KMeans_Data_Sum_PCA.png')
 
 
 """
 K-Means
 """
 def kmeansCluster(dataset):
-    k_means = cluster.KMeans(n_clusters=3)
+    k_means = cluster.KMeans(n_clusters=4)
     k_means.fit(dataset)
-    return k_means.cluster_centers_, k_means.inertia_
+    # return k_means.cluster_centers_, k_means.inertia_
+    return k_means.labels_
 
 
 """
@@ -53,6 +55,7 @@ def BirchCluster(dataset):
     birch.fit(data)
     return birch.subclusters_centers_, birch.labels
 
+"""
 def main():
     data = loadDataSet('data/data.cv')
     cluster_centers, cluster_labels = birch(data)
@@ -63,6 +66,8 @@ def main():
     print(cluster_labels)
     print('Calinski_Harabasz Score')
     print(Calinski_Harabasz)
+"""
+
 
 """
 DBSCAN http://www.cnblogs.com/pinard/p/6208966.html
@@ -72,6 +77,7 @@ def DBSCANCluster(dataset):
     dbscan.fit(data)
     return dbscan.labels_
 
+"""
 def main():
     data = loadDataSet('data/data.csv')
     cluster_labels = DBSCANCluster(data)
@@ -84,15 +90,18 @@ def main():
     print(completeness)
     print('Calinski_Harabasz')
     print(Calinski_Harabasz)
+"""
+
 
 """
 Hierarchical clustering
 """
 def HClustering(dataset):
     hclustering = cluster.AgglomerativeClustering(n_clusters=3)
-    hclustering.fit()
+    hclustering.fit(dataset)
     return hclustering.labels_
 
+"""
 def main():
     data = loadDataSet('data/data.csv')
     cluster_labels = HClustering(data)
@@ -102,7 +111,7 @@ def main():
     print(n_clusters)
     print('Calinski_Harabasz')
     print(Calinski_Harabasz)
-
+"""
 
 """
 Affinity Propagation
