@@ -11,11 +11,13 @@ import matplotlib.pyplot as plt
 """
 Draw Graph
 """
-def drawGraph(data, labels, filename):
-    # data_proj = tSNEEmbedding(data)
-    data_proj = pcaDecomposition(data)
+def drawGraph(data, labels, algo, decompmethod):
+    if decompmethod == "TSNE":
+        data_proj = tSNEEmbedding(data)
+    else:
+        data_proj = pcaDecomposition(data)
     plt.scatter(data_proj[:, 0], data_proj[:, 1], s=30, c=1.0*labels)
-    plt.savefig(filename)
+    plt.savefig("img/" + algo + "_Data_" + decompmethod + ".png")
 
 
 """

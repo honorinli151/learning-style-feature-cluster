@@ -1,0 +1,24 @@
+聚类效果分析：
+- K-Means
+n越大，距离和的值越小，只能用作baseline
+
+- SpectralClustering
+自动分成了8类，将很分散的点单独分到一类，PCA／TSNE显示效果相近
+
+- Affinity propagation
+自动分成了28类，效果不错, PCA／TSNE显示效果相近
+
+- Birch
+分成8类还不错，适合大样本
+
+- AgglomerativeClustering
+分成8类还不错，适合大样本
+
+- DBSCAN
+自动3类，效果不好，适合大样本
+
+- Mean Shift
+自动1类，不适合这样的样本
+
+- Ward
+适合大样本

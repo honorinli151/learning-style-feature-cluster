@@ -3,9 +3,9 @@
 # Reference: http://scikit-learn.org/stable/modules/clustering.html
 
 from numpy import *
-from sklearn import cluster, datasets
+from sklearn import cluster
 from src import visualization
-
+from src import cluster_evaluation
 
 """Load raw data set"""
 def loadDataSet(filename):
@@ -23,95 +23,78 @@ def loadDataSet(filename):
 MAIN
 """
 def main():
-    data = loadDataSet('data/data_sum.csv')
+    data = loadDataSet('data/data.csv')
     # cluster_centers, cluster_inertia = kmeansCluster(data)
-    labels = kmeansCluster(data)
-    # cluster_centers = affPropCluster(data)
-    # cluster_centers = meanShiftCluster(data)
+    # cluster_inertia = kmeansCluster(data)
+    # labels = affPropCluster(data)
+    # labels = meanShiftCluster(data)
     # cluster_centers = wardCluster(data)
-    # cluster_centers = specClutCluster(data)
+    # labels = specClutCluster(data)
+    # labels = DBSCANCluster(data)
+    # labels = BirchCluster(data)
+    # labels = AClustering(data)
     # print("Cluster centers:")
     # print(cluster_centers)
     # print("Sum of distance")
     # print(cluster_inertia)
-    visualization.drawGraph(data, labels, 'data/KMeans_Data_Sum_PCA.png')
+    # print "Cluster number: ", unique(labels).shape[0]
+    # cluster_evaluation.evaluation(data, labels)
+    # visualization.drawGraph(data, labels, algo="AC", decompmethod="PCA")
 
 
 """
 K-Means
 """
 def kmeansCluster(dataset):
-    k_means = cluster.KMeans(n_clusters=4)
-    k_means.fit(dataset)
+    inertias = zeros(20)
+    for i in range(2, 22):
+        k_means = cluster.KMeans(n_clusters=i)
+        k_means.fit(dataset)
+        inertias[i-2] = k_means.inertia_
     # return k_means.cluster_centers_, k_means.inertia_
-    return k_means.labels_
+    # return k_means.labels_
+    return inertias
 
 
 """
-Birch http://www.cnblogs.com/pinard/p/6200579.html
+Birch
+http://www.cnblogs.com/pinard/p/6200579.html
 """
 def BirchCluster(dataset):
-    birch = cluster.Birch(n_clusters=3)
-    birch.fit(data)
-    return birch.subclusters_centers_, birch.labels
-
-"""
-def main():
-    data = loadDataSet('data/data.cv')
-    cluster_centers, cluster_labels = birch(data)
-    Calinski_Harabasz = metrics.calinski_harabaz_score(data, birch.fit(data))
-    print('Cluster_centers:')
-    print(cluster_centers)
-    print('Cluster_labels')
-    print(cluster_labels)
-    print('Calinski_Harabasz Score')
-    print(Calinski_Harabasz)
-"""
+    birch = cluster.Birch(n_clusters=8)
+    birch.fit(dataset)
+    return birch.labels_
 
 
 """
-DBSCAN http://www.cnblogs.com/pinard/p/6208966.html
+AgglomerativeClustering
+"""
+def AClustering(dataset):
+    aclustering = cluster.AgglomerativeClustering(n_clusters=8)
+    aclustering.fit(dataset)
+    return aclustering.labels_
+
+
+"""
+Ward???????????????????????????????????????????????????
+Recursively merges the pair of clusters that minimally increases within-cluster variance.
+http://scikit-learn.sourceforge.net/stable/modules/generated/sklearn.cluster.Ward.html
+"""
+def wardCluster(dataset):
+    #children, n_components, n_leaves, parents, distances = cluster.ward_tree(dataset)
+    #return children
+    cluster.ward_tree(dataset)
+
+
+"""
+DBSCAN 
+http://www.cnblogs.com/pinard/p/6208966.html
 """
 def DBSCANCluster(dataset):
-    dbscan = cluster.dbscan()
-    dbscan.fit(data)
+    dbscan = cluster.DBSCAN()
+    dbscan.fit(dataset)
     return dbscan.labels_
 
-"""
-def main():
-    data = loadDataSet('data/data.csv')
-    cluster_labels = DBSCANCluster(data)
-    n_clusters = len(set(cluster_labels)) - (1 if -1 in labels else 0)
-    completeness = metrics.completeness_score(cluster_labels_true, cluster_labels) #The percentage of data rest
-    Calinski_Harabasz = metrics.calinski_harabaz_score(data, dbscan.fit(data))
-    print('n_clusters;')
-    print(n_clusters)
-    print('Completeness')
-    print(completeness)
-    print('Calinski_Harabasz')
-    print(Calinski_Harabasz)
-"""
-
-
-"""
-Hierarchical clustering
-"""
-def HClustering(dataset):
-    hclustering = cluster.AgglomerativeClustering(n_clusters=3)
-    hclustering.fit(dataset)
-    return hclustering.labels_
-
-"""
-def main():
-    data = loadDataSet('data/data.csv')
-    cluster_labels = HClustering(data)
-    n_clusters = len(set(cluster_labels)) - (1 if -1 in labels else 0)
-    Calinski_Harabasz = metrics.calinski_harabaz_score(data, dbscan.fit(data))
-    print('n_clusters;')
-    print(n_clusters)
-    print('Calinski_Harabasz')
-    print(Calinski_Harabasz)
-"""
 
 """
 Affinity Propagation
@@ -120,7 +103,7 @@ http://www.cnblogs.com/huadongw/p/4202492.html
 def affPropCluster(dataset):
     aff_prop = cluster.AffinityPropagation()
     aff_prop.fit(dataset)
-    return aff_prop.cluster_centers_
+    return aff_prop.labels_
 
 
 """
@@ -129,10 +112,10 @@ http://www.cnblogs.com/liqizhou/archive/2012/05/12/2497220.html
 Cluster = 1, not recommend
 """
 def meanShiftCluster(dataset):
-    bandwidth = cluster.estimate_bandwidth(dataset, quantile=0.2)
-    mean_shift = cluster.MeanShift(bandwidth=bandwidth, bin_seeding=True)
+    # bandwidth = cluster.estimate_bandwidth(dataset, quantile=0.2)
+    mean_shift = cluster.MeanShift()
     mean_shift.fit(dataset)
-    return mean_shift.cluster_centers_
+    return mean_shift.labels_
 
 
 """
@@ -145,15 +128,4 @@ def specClutCluster(dataset):
     spec_clut = cluster.SpectralClustering()
     spec_clut.fit(dataset)
     return spec_clut.labels_
-
-
-"""
-Ward???????????????????????????????????????????????????
-Recursively merges the pair of clusters that minimally increases within-cluster variance.
-http://scikit-learn.sourceforge.net/stable/modules/generated/sklearn.cluster.Ward.html
-"""
-def wardCluster(dataset):
-    #children, n_components, n_leaves, parents, distances = cluster.ward_tree(dataset)
-    #return children
-    cluster.ward_tree(dataset)
 
